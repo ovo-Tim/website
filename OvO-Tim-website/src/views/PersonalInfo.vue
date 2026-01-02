@@ -277,118 +277,124 @@
 </style>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue';
 import Matter from 'matter-js';
+import { onBeforeUnmount, ref } from 'vue';
 
 // Refs
 const physicsEnabled = ref(false);
 let engine = null;
-let render = null;
+const render = null;
 let runner = null;
 
 const startPhysics = () => {
-    if (physicsEnabled.value) return; // Prevent double clicking
-    physicsEnabled.value = true;
+  if (physicsEnabled.value) return; // Prevent double clicking
+  physicsEnabled.value = true;
 
-    // 1. Setup Matter.js Engine
-    const Engine = Matter.Engine,
-        Render = Matter.Render, // We won't use the canvas render, but we need the engine
-        Runner = Matter.Runner,
-        Bodies = Matter.Bodies,
-        Composite = Matter.Composite,
-        Mouse = Matter.Mouse,
-        MouseConstraint = Matter.MouseConstraint;
+  // 1. Setup Matter.js Engine
+  const Engine = Matter.Engine,
+    Render = Matter.Render, // We won't use the canvas render, but we need the engine
+    Runner = Matter.Runner,
+    Bodies = Matter.Bodies,
+    Composite = Matter.Composite,
+    Mouse = Matter.Mouse,
+    MouseConstraint = Matter.MouseConstraint;
 
-    engine = Engine.create();
-    const world = engine.world;
+  engine = Engine.create();
+  const world = engine.world;
 
-    // 2. Select elements to physics-ify
-    // We select cards, the title, and even the button itself
-    const elements = document.querySelectorAll('.card, .page-title');
-    const bodies = [];
+  // 2. Select elements to physics-ify
+  // We select cards, the title, and even the button itself
+  const elements = document.querySelectorAll('.card, .page-title');
+  const bodies = [];
 
-    // 3. Create the Ground and Walls (so things don't fall forever)
-    const width = window.innerWidth;
-    const height = window.innerHeight; // Or document.body.scrollHeight for full page
+  // 3. Create the Ground and Walls (so things don't fall forever)
+  const width = window.innerWidth;
+  const height = window.innerHeight; // Or document.body.scrollHeight for full page
 
-    const ground = Bodies.rectangle(width / 2, height + 50, width, 100, { isStatic: true });
-    const leftWall = Bodies.rectangle(-50, height / 2, 100, height * 2, { isStatic: true });
-    const rightWall = Bodies.rectangle(width + 50, height / 2, 100, height * 2, { isStatic: true });
+  const ground = Bodies.rectangle(width / 2, height + 50, width, 100, {
+    isStatic: true,
+  });
+  const leftWall = Bodies.rectangle(-50, height / 2, 100, height * 2, {
+    isStatic: true,
+  });
+  const rightWall = Bodies.rectangle(width + 50, height / 2, 100, height * 2, {
+    isStatic: true,
+  });
 
-    Composite.add(world, [ground, leftWall, rightWall]);
+  Composite.add(world, [ground, leftWall, rightWall]);
 
-    // 4. Convert DOM elements to Physics Bodies
-    elements.forEach((el) => {
-        const rect = el.getBoundingClientRect();
+  // 4. Convert DOM elements to Physics Bodies
+  elements.forEach((el) => {
+    const rect = el.getBoundingClientRect();
 
-        el.style.userSelect = 'none';
+    el.style.userSelect = 'none';
 
-        // Save current computed width/height so they don't shrink when Position becomes Absolute
-        el.style.width = `${rect.width}px`;
-        el.style.height = `${rect.height}px`;
+    // Save current computed width/height so they don't shrink when Position becomes Absolute
+    el.style.width = `${rect.width}px`;
+    el.style.height = `${rect.height}px`;
 
-        // Calculate center of the element (Matter.js uses center, DOM uses top-left)
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
+    // Calculate center of the element (Matter.js uses center, DOM uses top-left)
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
 
-        // Create a rigid body
-        const body = Bodies.rectangle(x, y, rect.width, rect.height, {
-            restitution: 0.5, // Bounciness (0-1)
-            friction: 0.1,
-            density: 0.001
-        });
-
-        // Store reference to DOM element inside the body
-        body.render.element = el;
-        bodies.push(body);
+    // Create a rigid body
+    const body = Bodies.rectangle(x, y, rect.width, rect.height, {
+      restitution: 0.5, // Bounciness (0-1)
+      friction: 0.1,
+      density: 0.001,
     });
 
-    // 5. "Detach" elements from DOM layout and set to absolute
-    // We do this AFTER getting coordinates to avoid layout shifts before calculations
-    elements.forEach((el) => {
-        el.classList.add('is-falling');
-        el.style.position = 'fixed'; // Fixed so they fall relative to the viewport
-        el.style.top = '0';
-        el.style.left = '0';
-        el.style.margin = '0';
-        el.style.transformOrigin = 'center center';
-        el.style.zIndex = '1000';
+    // Store reference to DOM element inside the body
+    body.render.element = el;
+    bodies.push(body);
+  });
+
+  // 5. "Detach" elements from DOM layout and set to absolute
+  // We do this AFTER getting coordinates to avoid layout shifts before calculations
+  elements.forEach((el) => {
+    el.classList.add('is-falling');
+    el.style.position = 'fixed'; // Fixed so they fall relative to the viewport
+    el.style.top = '0';
+    el.style.left = '0';
+    el.style.margin = '0';
+    el.style.transformOrigin = 'center center';
+    el.style.zIndex = '1000';
+  });
+
+  Composite.add(world, bodies);
+
+  // 6. Add Mouse Interaction (So you can drag the elements!)
+  const mouse = Mouse.create(document.body);
+  const mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+      stiffness: 0.3, // Snappier dragging
+      render: { visible: false },
+    },
+  });
+  Composite.add(world, mouseConstraint);
+
+  // 7. Sync Physics to CSS
+  Matter.Events.on(engine, 'afterUpdate', () => {
+    bodies.forEach((body) => {
+      const el = body.render.element;
+      if (el) {
+        const { x, y } = body.position;
+        el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${body.angle}rad)`;
+      }
     });
+  });
 
-    Composite.add(world, bodies);
-
-    // 6. Add Mouse Interaction (So you can drag the elements!)
-    const mouse = Mouse.create(document.body);
-    const mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-            stiffness: 0.3, // Snappier dragging
-            render: { visible: false }
-        }
-    });
-    Composite.add(world, mouseConstraint);
-
-    // 7. Sync Physics to CSS
-    Matter.Events.on(engine, 'afterUpdate', () => {
-        bodies.forEach((body) => {
-            const el = body.render.element;
-            if (el) {
-                const { x, y } = body.position;
-                el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${body.angle}rad)`;
-            }
-        });
-    });
-
-    // 8. Run the Engine
-    runner = Runner.create();
-    Runner.run(runner, engine);
+  // 8. Run the Engine
+  runner = Runner.create();
+  Runner.run(runner, engine);
 };
 
 // Cleanup
 onBeforeUnmount(() => {
-    if (runner) Matter.Runner.stop(runner);
-    if (engine) Matter.Engine.clear(engine);
-    engine = null;
-    runner = null;
+  if (runner) Matter.Runner.stop(runner);
+  if (engine) Matter.Engine.clear(engine);
+  engine = null;
+  runner = null;
 });
 </script>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
 
 // We receive the collapsed state and theme from the parent (App.vue)
 defineProps<{
-    isCollapsed: boolean
-    isDark: boolean
-}>()
+  isCollapsed: boolean;
+  isDark: boolean;
+}>();
 
-defineEmits(['toggle-theme'])
+defineEmits(['toggle-theme']);
 </script>
 
 <template>
@@ -31,6 +31,10 @@ defineEmits(['toggle-theme'])
                 <span class="icon">🚀</span>
                 <span v-if="!isCollapsed" class="label">My Projects</span>
             </RouterLink>
+            <RouterLink to="/game" class="nav-item">
+                <span class="icon">🎮</span>
+                <span v-if="!isCollapsed" class="label">Know Me More</span>
+            </RouterLink>
         </nav>
 
         <!-- Bottom: Social Links -->
@@ -39,7 +43,7 @@ defineEmits(['toggle-theme'])
                 <span class="icon">🐙</span>
                 <span v-if="!isCollapsed" class="label">GitHub</span>
             </a>
-            <a href="https://mastodon.social" target="_blank" class="social-link" title="Mastodon">
+            <a href="https://woof.tech/@TimTu" target="_blank" class="social-link" title="Mastodon">
                 <span class="icon">🐘</span>
                 <span v-if="!isCollapsed" class="label">Mastodon</span>
             </a>

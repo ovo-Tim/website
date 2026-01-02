@@ -1,47 +1,50 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { RouterView } from 'vue-router'
-import Sidebar from './components/Sidebar.vue'
+import { onMounted, onUnmounted, ref } from 'vue';
+import { RouterView } from 'vue-router';
+import Sidebar from './components/Sidebar.vue';
 
-const isCollapsed = ref(false)
-const isDark = ref(false)
+const isCollapsed = ref(false);
+const isDark = ref(false);
 
 // Function to check window width and adjust state
 const checkScreenSize = () => {
-	// Collapse sidebar if screen is narrower than 1024px
-	isCollapsed.value = window.innerWidth < 1024
-}
+  // Collapse sidebar if screen is narrower than 1024px
+  isCollapsed.value = window.innerWidth < 1024;
+};
 
 const toggleTheme = () => {
-	isDark.value = !isDark.value
-	localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-	updateThemeClass()
-}
+  isDark.value = !isDark.value;
+  localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
+  updateThemeClass();
+};
 
 const updateThemeClass = () => {
-	if (isDark.value) {
-		document.documentElement.classList.add('dark')
-	} else {
-		document.documentElement.classList.remove('dark')
-	}
-}
+  if (isDark.value) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+};
 
 // Set up listeners when the app loads
 onMounted(() => {
-	checkScreenSize()
-	window.addEventListener('resize', checkScreenSize)
-	
-	const savedTheme = localStorage.getItem('theme')
-	if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-		isDark.value = true
-	}
-	updateThemeClass()
-})
+  checkScreenSize();
+  window.addEventListener('resize', checkScreenSize);
+
+  const savedTheme = localStorage.getItem('theme');
+  if (
+    savedTheme === 'dark' ||
+    (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
+    isDark.value = true;
+  }
+  updateThemeClass();
+});
 
 // Clean up listeners when the app closes
 onUnmounted(() => {
-	window.removeEventListener('resize', checkScreenSize)
-})
+  window.removeEventListener('resize', checkScreenSize);
+});
 </script>
 
 <template>

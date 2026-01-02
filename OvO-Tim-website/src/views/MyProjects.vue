@@ -1,109 +1,118 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import dictpenImg from '../assets/dictpen.png'
-import rwkvImg from '../assets/rwkv.png'
+import { computed, ref } from 'vue';
+import dictpenImg from '../assets/dictpen.png';
+import rwkvImg from '../assets/rwkv.png';
 
 // Define types
-type Category = 'All' | 'Software' | 'Hardware' | 'Machine Learning'
+type Category = 'All' | 'Software' | 'Hardware' | 'Machine Learning';
 
 interface Project {
-    id: number
-    title: string
-    category: Exclude<Category, 'All'>
-    description: string
-    link?: string
-    image?: string // Added image property
-    isOngoing?: boolean, // To identify ongoing projects
+  id: number;
+  title: string;
+  category: Exclude<Category, 'All'>;
+  description: string;
+  link?: string;
+  image?: string; // Added image property
+  isOngoing?: boolean; // To identify ongoing projects
 }
 
-const currentFilter = ref<Category>('All')
+const currentFilter = ref<Category>('All');
 
 const getCategoryIcon = (category: string) => {
-    const icons: Record<string, string> = {
-        'Software': '🖥️',
-        'Hardware': '⚙️',
-        'Machine Learning': '🧠'
-    }
-    return icons[category] || '🚀'
-}
-
+  const icons: Record<string, string> = {
+    Software: '🖥️',
+    Hardware: '⚙️',
+    'Machine Learning': '🧠',
+  };
+  return icons[category] || '🚀';
+};
 
 // Separate or Filter specific ongoing projects
 const ongoingProjects = ref<Project[]>([
-    {
-        id: 100,
-        title: 'ging-gang: A platform to find real fiends',
-        category: 'Software',
-        description: 'A platform to find real fiends'
-    },
-    {
-        id: 101,
-        title: 'Phone hub: expand your phone',
-        category: 'Hardware',
-        description: 'A USB-C hub like device that expand your phone functionality by enabling you plug in any devices you want.',
-    },
-    {
-        id: 102,
-        title: 'Fox CAD: A simple CAD built for hobbyist.',
-        category: 'Software',
-        description: 'Built with Truck(A new CAD kernel in rust)',
-    },
-])
+  {
+    id: 100,
+    title: 'ging-gang: A platform to find real fiends',
+    category: 'Software',
+    description: 'A platform to find real fiends',
+  },
+  {
+    id: 101,
+    title: 'Phone hub: expand your phone',
+    category: 'Hardware',
+    description:
+      'A USB-C hub like device that expand your phone functionality by enabling you plug in any devices you want.',
+  },
+  {
+    id: 102,
+    title: 'Fox CAD: A simple CAD built for hobbyist.',
+    category: 'Software',
+    description: 'Built with Truck(A new CAD kernel in rust)',
+  },
+]);
 
 const projects: Project[] = [
-    {
-        id: 1,
-        title: 'InferPlaneRCNN',
-        category: 'Machine Learning',
-        description: 'A better way to infer pre-trained PlaneRCNN model',
-        link: 'https://github.com/ovo-Tim/InferPlaneRCNN',
-        image: 'https://github.com/ovo-Tim/InferPlaneRCNN/blob/main/showcase.jpg?raw=true'
-    },
-    {
-        id: 2,
-        title: 'EasyProfileFrame',
-        category: 'Software',
-        description: 'A FreeCAD workbench designed to simplify the creation of frames using profiles, such as aluminum profiles. It also includes support for exporting Bill of Materials (BOM).',
-        link: 'https://github.com/ovo-Tim/EasyProfileFrame',
-        image: 'https://github.com/ovo-Tim/EasyProfileFrame/blob/main/docs/miterCut.png?raw=true'
-    },
-    {
-        id: 3,
-        title: 'Crack your Youdao Dictionary Pen S6/S6Pro',
-        category: 'Software',
-        description: 'Python model using PyTorch to identify bird species.',
-        link: 'https://github.com/ovo-Tim/Youdao-DictPenS6P',
-        image: dictpenImg
-    },
-    {
-        id: 4,
-        title: 'RWKV-s1',
-        category: 'Machine Learning',
-        description: 'SFT BlinkDL/rwkv-7-world on simplescaling/s1K-1.1',
-        link: 'https://github.com/ovo-Tim/RWKV-s1',
-        image: rwkvImg
-    },
-    {
-        id: 5,
-        title: 'mdict2sql',
-        category: 'Software',
-        description: 'My first project in Rust. Convert Mdict to SQLite with high speed. Support multithreading.',
-        link: 'https://github.com/ovo-Tim/mdict2sql',
-    }
-]
+  {
+    id: 1,
+    title: 'InferPlaneRCNN',
+    category: 'Machine Learning',
+    description: 'A better way to infer pre-trained PlaneRCNN model',
+    link: 'https://github.com/ovo-Tim/InferPlaneRCNN',
+    image:
+      'https://github.com/ovo-Tim/InferPlaneRCNN/blob/main/showcase.jpg?raw=true',
+  },
+  {
+    id: 2,
+    title: 'EasyProfileFrame',
+    category: 'Software',
+    description:
+      'A FreeCAD workbench designed to simplify the creation of frames using profiles, such as aluminum profiles. It also includes support for exporting Bill of Materials (BOM).',
+    link: 'https://github.com/ovo-Tim/EasyProfileFrame',
+    image:
+      'https://github.com/ovo-Tim/EasyProfileFrame/blob/main/docs/miterCut.png?raw=true',
+  },
+  {
+    id: 3,
+    title: 'Crack your Youdao Dictionary Pen S6/S6Pro',
+    category: 'Software',
+    description: 'Python model using PyTorch to identify bird species.',
+    link: 'https://github.com/ovo-Tim/Youdao-DictPenS6P',
+    image: dictpenImg,
+  },
+  {
+    id: 4,
+    title: 'RWKV-s1',
+    category: 'Machine Learning',
+    description: 'SFT BlinkDL/rwkv-7-world on simplescaling/s1K-1.1',
+    link: 'https://github.com/ovo-Tim/RWKV-s1',
+    image: rwkvImg,
+  },
+  {
+    id: 5,
+    title: 'mdict2sql',
+    category: 'Software',
+    description:
+      'My first project in Rust. Convert Mdict to SQLite with high speed. Support multithreading.',
+    link: 'https://github.com/ovo-Tim/mdict2sql',
+  },
+];
 
 const filteredProjects = computed(() => {
-    if (currentFilter.value === 'All') return projects
-    return projects.filter(p => p.category === currentFilter.value)
-})
+  if (currentFilter.value === 'All') return projects;
+  return projects.filter((p) => p.category === currentFilter.value);
+});
 
-const categories: Category[] = ['All', 'Software', 'Hardware', 'Machine Learning']
+const categories: Category[] = [
+  'All',
+  'Software',
+  'Hardware',
+  'Machine Learning',
+];
 
 const goToProject = (link?: string) => {
-    if (link) {
-        window.open(link, '_blank', 'noopener,noreferrer')
-    }
-}
+  if (link) {
+    window.open(link, '_blank', 'noopener,noreferrer');
+  }
+};
 </script>
 
 <template>
