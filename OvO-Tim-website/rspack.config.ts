@@ -1,4 +1,5 @@
 import { defineConfig } from "@rspack/cli";
+import path from "path";
 import {
 	type RspackPluginFunction,
 	rspack,
@@ -14,7 +15,10 @@ export default defineConfig({
 		main: "./src/main.ts"
 	},
 	resolve: {
-		extensions: ["...", ".ts", ".vue"]
+		extensions: ["...", ".ts", ".vue"],
+		alias: {
+			"@": path.resolve(__dirname, "src")
+		}
 	},
 	module: {
 		rules: [

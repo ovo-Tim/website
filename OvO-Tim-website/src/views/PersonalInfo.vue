@@ -39,7 +39,10 @@
 
         <div class="boost-container">
             <p v-if="physicsEnabled" class="leak-msg">Oh no! The WD40 leaked.</p>
-            <button class="btn-modern" @click="startPhysics">Boost the server by WD40</button>
+            <div class="tooltip">Boost the server with WD40</div>
+            <button class="btn-wd40" @click="startPhysics">
+                <img src="../assets/WD-40_logo.svg" alt="WD40" class="wd40-icon" />
+            </button>
         </div>
     </div>
 </template>
@@ -51,51 +54,94 @@
 }
 
 .page-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
 }
 
 .card {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    /* The 3D Floating Shadow */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
     margin-bottom: 2rem;
-    transition: transform 0.2s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+}
+
+.card.is-falling {
+    transition: none !important;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transition: 0.5s;
 }
 
 .card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--card-shadow-hover);
+    border: 1px solid var(--border-hover);
+    background: var(--bg-card-hover);
+}
+
+.card:hover::before {
+    left: 100%;
 }
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
 }
 
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5rem;
+}
+
 .stat-card h3 {
-    color: #888;
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
 }
 
 .stat-card p {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0.25rem 0;
 }
 
 .btn-modern {
-    /* Layout & Sizing */
     display: inline-block;
     padding: 12px 28px;
     font-family: 'Inter', sans-serif;
-    /* Or any clean sans-serif */
     font-size: 16px;
     font-weight: 600;
     text-align: center;
@@ -103,35 +149,62 @@
     cursor: pointer;
     border: none;
     border-radius: 8px;
-    /* Rounded corners for a modern feel */
-
-    /* Colors & Styling */
     color: #ffffff;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-
-    /* Smooth Animation */
     transition: all 0.2s ease-in-out;
 }
 
-/* Hover State */
 .btn-modern:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    filter: brightness(1.1);
     transform: translateY(-1px);
-    /* Lifts the button slightly */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Click/Active State */
 .btn-modern:active {
     transform: translateY(0);
     filter: brightness(0.9);
 }
 
-/* Focus State (Accessibility) */
 .btn-modern:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.btn-wd40 {
+    background: var(--bg-sidebar);
+    border: none;
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 12px;
+}
+
+.btn-wd40:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.btn-wd40:active {
+    transform: scale(0.95);
+}
+
+.btn-wd40:hover + .tooltip,
+.btn-wd40:hover ~ .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.wd40-icon {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 .boost-container {
@@ -145,6 +218,39 @@
     z-index: 2000;
 }
 
+.tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    transform: translateY(5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 25px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--bg-secondary) transparent transparent transparent;
+}
+
+.boost-container:hover .tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .leak-msg {
     background: #fee2e2;
     color: #ef4444;
@@ -153,7 +259,20 @@
     font-size: 0.875rem;
     font-weight: 500;
     margin: 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    animation: fadeIn 0.3s ease;
+}
+
+.dark .leak-msg {
+    background: #450a0a;
+    color: #fca5a5;
+    border-color: rgba(252, 165, 165, 0.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 </style>
 
@@ -227,6 +346,7 @@ const startPhysics = () => {
     // 5. "Detach" elements from DOM layout and set to absolute
     // We do this AFTER getting coordinates to avoid layout shifts before calculations
     elements.forEach((el) => {
+        el.classList.add('is-falling');
         el.style.position = 'fixed'; // Fixed so they fall relative to the viewport
         el.style.top = '0';
         el.style.left = '0';
@@ -242,49 +362,33 @@ const startPhysics = () => {
     const mouseConstraint = MouseConstraint.create(engine, {
         mouse: mouse,
         constraint: {
-            stiffness: 0.2,
+            stiffness: 0.3, // Snappier dragging
             render: { visible: false }
         }
     });
     Composite.add(world, mouseConstraint);
 
-    // 7. Custom Render Loop (Sync Physics -> CSS)
-    const updateLoop = () => {
-        if (!engine) return;
-
-        // Update physics
-        Matter.Engine.update(engine, 1000 / 60);
-
-        // Sync CSS transforms
+    // 7. Sync Physics to CSS
+    Matter.Events.on(engine, 'afterUpdate', () => {
         bodies.forEach((body) => {
             const el = body.render.element;
             if (el) {
                 const { x, y } = body.position;
-                const angle = body.angle;
-                // Translate moves center to 0,0, so we simply move to x,y
-                // But since fixed top/left is 0, we translate exactly to body position minus half width/height?
-                // Actually easier: translate to body.x and body.y, but offset by percent to center it
-                el.style.transform = `translate(${x - body.bounds.max.x + body.bounds.min.x + (body.bounds.max.x - body.bounds.min.x) / 2}px, ${y}px) translate(-50%, -50%) rotate(${angle}rad)`;
-
-                // Simplified math for translate:
-                // DOM (0,0) is top-left. Body (x,y) is center.
-                // We set top:0 left:0.
-                // We want to move element center to x,y.
-                el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${angle}rad)`;
+                el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${body.angle}rad)`;
             }
         });
+    });
 
-        requestAnimationFrame(updateLoop);
-    };
-
-    updateLoop();
+    // 8. Run the Engine
+    runner = Runner.create();
+    Runner.run(runner, engine);
 };
 
-// Cleanup just in case
+// Cleanup
 onBeforeUnmount(() => {
-    if (engine) {
-        Matter.Engine.clear(engine);
-        engine = null;
-    }
+    if (runner) Matter.Runner.stop(runner);
+    if (engine) Matter.Engine.clear(engine);
+    engine = null;
+    runner = null;
 });
 </script>

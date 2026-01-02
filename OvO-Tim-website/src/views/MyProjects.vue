@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import dictpenImg from '../assets/dictpen.png'
+import rwkvImg from '../assets/rwkv.png'
 
 // Define types
 type Category = 'All' | 'Software' | 'Hardware' | 'Machine Learning'
@@ -16,19 +18,35 @@ interface Project {
 
 const currentFilter = ref<Category>('All')
 
+const getCategoryIcon = (category: string) => {
+    const icons: Record<string, string> = {
+        'Software': '🖥️',
+        'Hardware': '⚙️',
+        'Machine Learning': '🧠'
+    }
+    return icons[category] || '🚀'
+}
+
+
 // Separate or Filter specific ongoing projects
 const ongoingProjects = ref<Project[]>([
     {
         id: 100,
         title: 'ging-gang: A platform to find real fiends',
         category: 'Software',
-        description: 'A platform to find real fiends',
+        description: 'A platform to find real fiends'
     },
     {
         id: 101,
         title: 'Phone hub: expand your phone',
         category: 'Hardware',
         description: 'A USB-C hub like device that expand your phone functionality by enabling you plug in any devices you want.',
+    },
+    {
+        id: 102,
+        title: 'Fox CAD: A simple CAD built for hobbyist.',
+        category: 'Software',
+        description: 'Built with Truck(A new CAD kernel in rust)',
     },
 ])
 
@@ -55,7 +73,7 @@ const projects: Project[] = [
         category: 'Software',
         description: 'Python model using PyTorch to identify bird species.',
         link: 'https://github.com/ovo-Tim/Youdao-DictPenS6P',
-        image: '../assets/dictpen.png'
+        image: dictpenImg
     },
     {
         id: 4,
@@ -63,13 +81,13 @@ const projects: Project[] = [
         category: 'Machine Learning',
         description: 'SFT BlinkDL/rwkv-7-world on simplescaling/s1K-1.1',
         link: 'https://github.com/ovo-Tim/RWKV-s1',
-        image: '../assets/rwkv.png'
+        image: rwkvImg
     },
     {
         id: 5,
         title: 'mdict2sql',
         category: 'Software',
-        description: 'Convert Mdict to SQLite in a high speed. Support multithreading now.',
+        description: 'My first project in Rust. Convert Mdict to SQLite with high speed. Support multithreading.',
         link: 'https://github.com/ovo-Tim/mdict2sql',
     }
 ]
@@ -80,6 +98,12 @@ const filteredProjects = computed(() => {
 })
 
 const categories: Category[] = ['All', 'Software', 'Hardware', 'Machine Learning']
+
+const goToProject = (link?: string) => {
+    if (link) {
+        window.open(link, '_blank', 'noopener,noreferrer')
+    }
+}
 </script>
 
 <template>
@@ -94,19 +118,28 @@ const categories: Category[] = ['All', 'Software', 'Hardware', 'Machine Learning
                     We are actively looking for passionate collaborators! Whether you are a designer,
                     coder, or just curious—we'd love to have you on board.
                 </p>
-                <button class="join-btn">Message me to Join!</button>
             </div>
 
             <div class="projects-grid">
-                <div v-for="project in ongoingProjects" :key="project.id" class="card ongoing-card">
+                <div v-for="project in ongoingProjects" :key="project.id" 
+                    class="card ongoing-card" 
+                    :class="{ 'clickable': project.link }"
+                    @click="goToProject(project.link)">
                     <div class="card-image-wrapper">
-                        <img :src="project.image" :alt="project.title" loading="lazy" />
+                        <img v-if="project.image" :src="project.image" :alt="project.title" loading="lazy" />
+                        <div v-else class="card-placeholder" :class="project.category.toLowerCase().replace(' ', '-')">
+                            <div class="placeholder-bg"></div>
+                            <span class="placeholder-icon">{{ getCategoryIcon(project.category) }}</span>
+                        </div>
                         <span class="status-badge">Actively Hiring</span>
                     </div>
                     <div class="card-content">
-                        <span class="badge" :class="project.category.toLowerCase().replace(' ', '-')">
-                            {{ project.category }}
-                        </span>
+                        <div class="card-header">
+                            <span class="badge" :class="project.category.toLowerCase().replace(' ', '-')">
+                                {{ project.category }}
+                            </span>
+                            <span v-if="project.link" class="link-icon">↗</span>
+                        </div>
                         <h3>{{ project.title }}</h3>
                         <p>{{ project.description }}</p>
                     </div>
@@ -130,17 +163,27 @@ const categories: Category[] = ['All', 'Software', 'Hardware', 'Machine Learning
 
             <!-- Grid -->
             <div class="projects-grid">
-                <div v-for="project in filteredProjects" :key="project.id" class="card project-card">
+                <div v-for="project in filteredProjects" :key="project.id" 
+                    class="card project-card"
+                    :class="{ 'clickable': project.link }"
+                    @click="goToProject(project.link)">
                     <!-- Image on Top -->
                     <div class="card-image-wrapper">
-                        <img :src="project.image" :alt="project.title" loading="lazy" />
+                        <img v-if="project.image" :src="project.image" :alt="project.title" loading="lazy" />
+                        <div v-else class="card-placeholder" :class="project.category.toLowerCase().replace(' ', '-')">
+                            <div class="placeholder-bg"></div>
+                            <span class="placeholder-icon">{{ getCategoryIcon(project.category) }}</span>
+                        </div>
                     </div>
 
                     <!-- Content Below -->
                     <div class="card-content">
-                        <span class="badge" :class="project.category.toLowerCase().replace(' ', '-')">
-                            {{ project.category }}
-                        </span>
+                        <div class="card-header">
+                            <span class="badge" :class="project.category.toLowerCase().replace(' ', '-')">
+                                {{ project.category }}
+                            </span>
+                            <span v-if="project.link" class="link-icon">↗</span>
+                        </div>
                         <h3>{{ project.title }}</h3>
                         <p>{{ project.description }}</p>
                     </div>
@@ -152,134 +195,141 @@ const categories: Category[] = ['All', 'Software', 'Hardware', 'Machine Learning
 
 <style scoped>
 .page-container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 3rem 1.5rem;
 }
 
 /* --- Ongoing Section Styling --- */
 .ongoing-section {
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-    padding: 2.5rem;
-    border-radius: 24px;
-    margin-bottom: 3rem;
-    border: 1px solid #e1e4e8;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    padding: 4rem 2rem;
+    border-radius: 32px;
+    margin-bottom: 4rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.ongoing-section::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--accent-primary) 0.1, transparent 70%);
+    border-radius: 50%;
+    opacity: 0.2;
 }
 
 .invitation-text {
     text-align: center;
-    max-width: 600px;
-    margin: 0 auto 2.5rem;
+    max-width: 800px;
+    margin: 0 auto 3rem;
 }
 
 .invitation-text h2 {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
-    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .warm-invite {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     line-height: 1.6;
-    color: #555;
-    margin-bottom: 1.5rem;
-}
-
-.join-btn {
-    background: #2c3e50;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 30px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-}
-
-.join-btn:hover {
-    background: #3e5871;
-    transform: scale(1.05);
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
 }
 
 .divider {
     height: 1px;
-    background: #eee;
-    margin: 3rem 0;
+    background: linear-gradient(90deg, transparent, var(--divider-color), transparent);
+    margin: 4rem 0;
 }
 
 /* --- Generic Page Styling --- */
 .page-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
 }
 
 .filters {
     display: flex;
-    gap: 0.8rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    margin-bottom: 3rem;
     flex-wrap: wrap;
 }
 
 .filter-btn {
-    border: none;
-    background: transparent;
-    padding: 0.6rem 1.4rem;
-    border-radius: 25px;
+    border: 1px solid var(--divider-color);
+    background: var(--bg-sidebar);
+    padding: 0.75rem 1.5rem;
+    border-radius: 14px;
     cursor: pointer;
     font-weight: 600;
-    color: #7f8c8d;
-    transition: all 0.2s;
-    background: #f8f9fa;
+    color: var(--text-secondary);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .filter-btn:hover {
-    background: #e9ecef;
+    background: var(--bg-secondary);
+    border-color: var(--text-muted);
+    color: var(--text-primary);
 }
 
 .filter-btn.active {
-    background: #2c3e50;
-    color: white;
-    box-shadow: 0 4px 10px rgba(44, 62, 80, 0.2);
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border-color: var(--text-primary);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
 }
 
 /* --- Card Grid Styling --- */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2.5rem;
 }
 
 .card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 24px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* Ensures image corners follow border radius */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #f0f0f0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+}
+
+.card.clickable {
+    cursor: pointer;
 }
 
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
-
-.ongoing-card {
-    border: 2px solid #2c3e50;
-    /* Highlight ongoing projects */
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: var(--card-shadow-hover);
+    background: var(--bg-card-hover);
 }
 
 /* --- Card Image Area --- */
 .card-image-wrapper {
     width: 100%;
-    height: 180px;
+    height: 220px;
     position: relative;
-    background-color: #eee;
+    background-color: var(--bg-secondary);
+    overflow: hidden;
 }
 
 .card-image-wrapper img {
@@ -287,65 +337,132 @@ const categories: Category[] = ['All', 'Software', 'Hardware', 'Machine Learning
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover .card-image-wrapper img {
+    transform: scale(1.1);
 }
 
 .status-badge {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(44, 62, 80, 0.9);
+    top: 1.25rem;
+    right: 1.25rem;
+    background: rgba(15, 23, 42, 0.8);
     color: white;
-    font-size: 0.7rem;
-    padding: 4px 10px;
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
     border-radius: 12px;
-    font-weight: bold;
-    backdrop-filter: blur(4px);
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* --- Card Content Area --- */
 .card-content {
-    padding: 1.5rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.link-icon {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    opacity: 0.6;
+}
+
+.card:hover .link-icon {
+    color: var(--accent-primary);
+    transform: translate(2px, -2px);
+    opacity: 1;
+}
+
 .card h3 {
-    margin: 0.8rem 0 0.5rem;
-    color: #2c3e50;
-    font-size: 1.25rem;
+    margin: 1rem 0 0.75rem;
+    color: var(--text-primary);
+    font-size: 1.4rem;
+    font-weight: 800;
+    line-height: 1.2;
 }
 
 .card p {
-    color: #666;
-    line-height: 1.5;
-    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 1rem;
     margin: 0;
 }
 
 /* --- Badges --- */
 .badge {
-    font-size: 0.75rem;
-    padding: 0.3rem 0.8rem;
-    border-radius: 50px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-size: 0.7rem;
+    padding: 0.4rem 1rem;
+    border-radius: 10px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 /* Badge colors */
 .badge.software {
-    background-color: #e3f2fd;
-    color: #1976d2;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
 }
 
 .badge.hardware {
-    background-color: #fbe9e7;
-    color: #d84315;
+    background-color: rgba(235, 68, 68, 0.1);
+    color: #eb4444;
 }
 
 .badge.machine-learning {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+/* --- Placeholder Styling --- */
+.card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.card-placeholder.software {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.2) 100%);
+    color: #3b82f6;
+}
+
+.card-placeholder.hardware {
+    background: linear-gradient(135deg, rgba(235, 68, 68, 0.1) 0%, rgba(235, 68, 68, 0.2) 100%);
+    color: #f43f5e;
+}
+
+.card-placeholder.machine-learning {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.2) 100%);
+    color: #10b981;
+}
+
+.placeholder-icon {
+    font-size: 4.5rem;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+    z-index: 1;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card:hover .placeholder-icon {
+    transform: scale(1.25) rotate(8deg);
+    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.15));
 }
 </style>

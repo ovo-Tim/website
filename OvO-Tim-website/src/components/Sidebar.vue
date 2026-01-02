@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 
-// We receive the collapsed state from the parent (App.vue)
+// We receive the collapsed state and theme from the parent (App.vue)
 defineProps<{
     isCollapsed: boolean
+    isDark: boolean
 }>()
+
+defineEmits(['toggle-theme'])
 </script>
 
 <template>
@@ -40,6 +43,11 @@ defineProps<{
                 <span class="icon">🐘</span>
                 <span v-if="!isCollapsed" class="label">Mastodon</span>
             </a>
+            
+            <button @click="$emit('toggle-theme')" class="theme-toggle" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+                <span class="icon">{{ isDark ? '☀️' : '🌙' }}</span>
+                <span v-if="!isCollapsed" class="label">{{ isDark ? 'Light Mode' : 'Dark Mode' }}</span>
+            </button>
         </div>
     </aside>
 </template>
@@ -48,13 +56,12 @@ defineProps<{
 .sidebar {
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: var(--bg-sidebar);
     height: 100vh;
     width: 260px;
     padding: 1.5rem;
-    /* The 3D Shadow */
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
-    transition: width 0.3s ease, padding 0.3s ease;
+    box-shadow: var(--sidebar-shadow);
+    transition: width 0.3s ease, padding 0.3s ease, background-color 0.3s ease;
     z-index: 10;
 }
 
@@ -88,7 +95,7 @@ defineProps<{
 h3 {
     margin-top: 1rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     white-space: nowrap;
 }
 
@@ -105,7 +112,7 @@ h3 {
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    color: #555;
+    color: var(--text-secondary);
     text-decoration: none;
     border-radius: 12px;
     transition: all 0.2s ease;
@@ -113,9 +120,9 @@ h3 {
 
 .nav-item:hover,
 .nav-item.router-link-active {
-    background-color: #f0f4f8;
-    color: #2c3e50;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px #fff;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.1);
     font-weight: bold;
 }
 
@@ -129,25 +136,33 @@ h3 {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--divider-color);
     padding-top: 1rem;
 }
 
-.social-link {
+.social-link, .theme-toggle {
     display: flex;
     align-items: center;
-    color: #666;
+    color: var(--text-secondary);
     text-decoration: none;
     padding: 0.5rem;
     border-radius: 8px;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+    font-family: inherit;
 }
 
-.social-link:hover {
-    background-color: #f9f9f9;
+.social-link:hover, .theme-toggle:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
-.collapsed .social-link {
+.collapsed .social-link, .collapsed .theme-toggle {
     justify-content: center;
 }
 
@@ -168,7 +183,6 @@ h3 {
     from {
         opacity: 0;
     }
-
     to {
         opacity: 1;
     }
