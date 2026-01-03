@@ -27,6 +27,9 @@ importers:
       '@rspack/core':
         specifier: ^1.6.8
         version: 1.6.8
+      '@types/matter-js':
+        specifier: ^0.20.2
+        version: 0.20.2
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -312,6 +315,9 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+
+  '@types/matter-js@0.20.2':
+    resolution: {integrity: sha512-3PPKy3QxvZ89h9+wdBV2488I1JLVs7DEpIkPvgO8JC1mUdiVSO37ZIvVctOTD7hIq8OAL2gJ3ugGSuUip6DhCw==}
 
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
@@ -1739,6 +1745,8 @@ snapshots:
       '@types/node': 25.0.3
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/matter-js@0.20.2': {}
 
   '@types/mime@1.3.5': {}
 

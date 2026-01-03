@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import dictpenImg from '../assets/dictpen.png';
 import rwkvImg from '../assets/rwkv.png';
+import uvcImg from '../assets/uvc.jpeg';
 
 // Define types
 type Category = 'All' | 'Software' | 'Hardware' | 'Machine Learning';
@@ -93,6 +94,14 @@ const projects: Project[] = [
     description:
       'My first project in Rust. Convert Mdict to SQLite with high speed. Support multithreading.',
     link: 'https://github.com/ovo-Tim/mdict2sql',
+  },
+  {
+    id: 6,
+    title: 'UVC sterilizer',
+    category: 'Hardware',
+    description:
+      'A device to experiment UVC sterilization with different wavelengths, time and temperature.',
+    image: uvcImg,
   },
 ];
 

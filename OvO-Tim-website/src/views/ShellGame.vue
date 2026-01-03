@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, nextTick, onBeforeUnmount } from 'vue';
 import Matter from 'matter-js';
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import bombImg from '../assets/bomb.png';
 // Assets
 import cupImg from '../assets/cup.png';
-import openSourceImg from '../assets/Open_Source_Initiative.svg.png';
 import ferrisImg from '../assets/ferris.png';
 import kicadImg from '../assets/kicad.png';
+import openSourceImg from '../assets/Open_Source_Initiative.svg.png';
 import rickrollImg from '../assets/rickroll-roll.gif';
 
 // Game States
@@ -37,8 +37,10 @@ interface Cup {
 
 const cups = ref<Cup[]>([]);
 const descriptions: Record<string, string> = {
-  ferris: "I love the design of Rust—it's both elegant and high-performance. It’s a versatile tool that I can use almost anywhere.",
-  kicad: 'KiCAD make people bored, cause circuit board is (a) kind of board(bored). :P Besides, it is a really nice EDA tool and I enjoyed a lot when design PCBs with it.',
+  ferris:
+    "I love the design of Rust—it's both elegant and high-performance. It’s a versatile tool that I can use almost anywhere.",
+  kicad:
+    'KiCAD make people bored, cause circuit board is (a) kind of board(bored). :P Besides, it is a really nice EDA tool and I enjoyed a lot when design PCBs with it.',
   opensource: 'Open source gives us a brighter future',
   bomb: 'BOOM!',
   rickroll: "Go to check out Rick Astley's other songs. They are not bad!",
@@ -52,7 +54,7 @@ const cupSpacing = 150;
 const initGame = () => {
   // Cleanup Physics first
   cleanupPhysics();
-  
+
   // Clear any existing movement timeouts
   if (moveTimeout) clearTimeout(moveTimeout);
   if (autoMoveTimeout) clearTimeout(autoMoveTimeout);
@@ -126,10 +128,10 @@ const startGame = async () => {
     // Swap positions (both X and Y)
     const tempX = c1.x;
     const tempY = c1.y;
-    
+
     c1.x = c2.x;
     c1.y = c2.y;
-    
+
     c2.x = tempX;
     c2.y = tempY;
 
@@ -160,16 +162,16 @@ let moveTimeout: ReturnType<typeof setTimeout> | null = null;
 let autoMoveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const moveFerris = () => {
-    const ferrisCup = cups.value.find((c) => c.content === 'ferris');
-    if (!ferrisCup || gameState.value !== 'hunting') return;
+  const ferrisCup = cups.value.find((c) => c.content === 'ferris');
+  if (!ferrisCup || gameState.value !== 'hunting') return;
 
-    const margin = 50;
-    const newX = margin + Math.random() * (containerWidth - 2 * margin);
-    const newY = margin + Math.random() * (containerHeight - 2 * margin);
+  const margin = 50;
+  const newX = margin + Math.random() * (containerWidth - 2 * margin);
+  const newY = margin + Math.random() * (containerHeight - 2 * margin);
 
-    ferrisCup.x = newX;
-    ferrisCup.y = newY;
-}
+  ferrisCup.x = newX;
+  ferrisCup.y = newY;
+};
 
 const onFerrisHover = () => {
   if (gameState.value !== 'hunting') return;
@@ -193,11 +195,17 @@ const scheduleAutoMove = () => {
 
 const catchFerris = () => {
   if (gameState.value !== 'hunting') return;
-  if (moveTimeout) { clearTimeout(moveTimeout); moveTimeout = null; }
-  if (autoMoveTimeout) { clearTimeout(autoMoveTimeout); autoMoveTimeout = null; }
+  if (moveTimeout) {
+    clearTimeout(moveTimeout);
+    moveTimeout = null;
+  }
+  if (autoMoveTimeout) {
+    clearTimeout(autoMoveTimeout);
+    autoMoveTimeout = null;
+  }
 
   gameState.value = 'caught';
-  message.value = "I write Rust sometimes, so I guess this makes sense.";
+  message.value = 'I write Rust sometimes, so I guess this makes sense.';
   subMessage.value = "Click other cups to see what's inside.";
 
   const ferrisCup = cups.value.find((c) => c.content === 'ferris');
@@ -213,7 +221,7 @@ const revealCup = (cup: Cup) => {
     if (cup.content === 'bomb') {
       message.value = 'BOOM!';
       gameState.value = 'reveal';
-      
+
       playExplosionSound();
 
       // Trigger Explosion
@@ -222,21 +230,21 @@ const revealCup = (cup: Cup) => {
         // Find the element via ref or fallback to selector
         const el = cupRefs.value[index];
         if (el) {
-            const rect = el.getBoundingClientRect();
-            const startX = rect.left + rect.width / 2;
-            const startY = rect.top + rect.height / 2;
-            triggerExplosion(startX, startY);
-            createSmoke(startX, startY);
+          const rect = el.getBoundingClientRect();
+          const startX = rect.left + rect.width / 2;
+          const startY = rect.top + rect.height / 2;
+          triggerExplosion(startX, startY);
+          createSmoke(startX, startY);
         }
       });
     } else {
-        if (cup.content === 'rickroll') {
-            playRickrollSound();
-        } else if (cup.content === 'opensource') {
-            playOpenSourceSound();
-            cup.isSlowLift = true;
-        }
-        gameState.value = 'reveal';
+      if (cup.content === 'rickroll') {
+        playRickrollSound();
+      } else if (cup.content === 'opensource') {
+        playOpenSourceSound();
+        cup.isSlowLift = true;
+      }
+      gameState.value = 'reveal';
     }
   } else if (gameState.value === 'intro') {
     startGame();
@@ -244,244 +252,254 @@ const revealCup = (cup: Cup) => {
 };
 
 const playExplosionSound = () => {
-    try {
-        const audio = new Audio(new URL('../assets/explosion.mp3', import.meta.url).href);
-        audio.volume = 0.6;
-        audio.play();
-    } catch (e) {
-        console.warn("Explosion sound failed", e);
-    }
+  try {
+    const audio = new Audio(
+      new URL('../assets/explosion.mp3', import.meta.url).href,
+    );
+    audio.volume = 0.6;
+    audio.play();
+  } catch (e) {
+    console.warn('Explosion sound failed', e);
+  }
 };
 
 const playRickrollSound = () => {
-    try {
-        const audio = new Audio(new URL('../assets/rickroll.mp3', import.meta.url).href);
-        audio.volume = 0.6;
-        audio.play();
-    } catch (e) {
-        console.warn("Rickroll sound failed", e);
-    }
+  try {
+    const audio = new Audio(
+      new URL('../assets/rickroll.mp3', import.meta.url).href,
+    );
+    audio.volume = 0.6;
+    audio.play();
+  } catch (e) {
+    console.warn('Rickroll sound failed', e);
+  }
 };
 
 const playOpenSourceSound = () => {
-    try {
-        const audio = new Audio(new URL('../assets/arch_intro.mp3', import.meta.url).href);
-        audio.volume = 0.6;
-        audio.play();
-    } catch (e) {
-        console.warn("Open Source sound failed", e);
-    }
+  try {
+    const audio = new Audio(
+      new URL('../assets/arch_intro.mp3', import.meta.url).href,
+    );
+    audio.volume = 0.6;
+    audio.play();
+  } catch (e) {
+    console.warn('Open Source sound failed', e);
+  }
 };
 
 const playShuffleSound = () => {
-    try {
-        if (!shuffleAudio) {
-            shuffleAudio = new Audio(new URL('../assets/shuffling.mp3', import.meta.url).href);
-            shuffleAudio.loop = true;
-            shuffleAudio.volume = 0.4;
-        }
-        shuffleAudio.play();
-    } catch (e) {
-        console.warn("Shuffle sound failed", e);
+  try {
+    if (!shuffleAudio) {
+      shuffleAudio = new Audio(
+        new URL('../assets/shuffling.mp3', import.meta.url).href,
+      );
+      shuffleAudio.loop = true;
+      shuffleAudio.volume = 0.4;
     }
+    shuffleAudio.play();
+  } catch (e) {
+    console.warn('Shuffle sound failed', e);
+  }
 };
 
 const stopShuffleSound = () => {
-    if (shuffleAudio) {
-        shuffleAudio.pause();
-        shuffleAudio.currentTime = 0;
-    }
+  if (shuffleAudio) {
+    shuffleAudio.pause();
+    shuffleAudio.currentTime = 0;
+  }
 };
 
 // Smoke Effect Logic
 interface Particle {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    life: number;
-    maxLife: number;
-    size: number;
-    rotation: number;
-    color: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  maxLife: number;
+  size: number;
+  rotation: number;
+  color: string;
 }
 
 let particles: Particle[] = [];
 let animationFrameId: number | null = null;
 
 const createSmoke = (x: number, y: number) => {
-    if (!effectCanvas.value) return;
-    const ctx = effectCanvas.value.getContext('2d');
-    if (!ctx) return;
-    
-    // Set canvas size to full screen if not set
-    effectCanvas.value.width = window.innerWidth;
-    effectCanvas.value.height = window.innerHeight;
+  if (!effectCanvas.value) return;
+  const ctx = effectCanvas.value.getContext('2d');
+  if (!ctx) return;
 
-    // Create particles
-    for (let i = 0; i < 50; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 2 + 1; // Slower initial speed
-        particles.push({
-            x: x,
-            y: y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: 1.0,
-            maxLife: 1.0,
-            size: Math.random() * 15 + 5,
-            rotation: Math.random() * Math.PI * 2,
-            color: `rgba(${120 + Math.random()*40}, ${120 + Math.random()*40}, ${120 + Math.random()*40},` // Brighter grey
-        });
-    }
-    
-    if (!animationFrameId) {
-        updateParticles();
-    }
+  // Set canvas size to full screen if not set
+  effectCanvas.value.width = window.innerWidth;
+  effectCanvas.value.height = window.innerHeight;
+
+  // Create particles
+  for (let i = 0; i < 50; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 2 + 1; // Slower initial speed
+    particles.push({
+      x: x,
+      y: y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1.0,
+      maxLife: 1.0,
+      size: Math.random() * 15 + 5,
+      rotation: Math.random() * Math.PI * 2,
+      color: `rgba(${120 + Math.random() * 40}, ${120 + Math.random() * 40}, ${120 + Math.random() * 40},`, // Brighter grey
+    });
+  }
+
+  if (!animationFrameId) {
+    updateParticles();
+  }
 };
 
 const updateParticles = () => {
-    if (!effectCanvas.value) return;
-    const ctx = effectCanvas.value.getContext('2d');
-    if (!ctx) return;
+  if (!effectCanvas.value) return;
+  const ctx = effectCanvas.value.getContext('2d');
+  if (!ctx) return;
 
-    ctx.clearRect(0, 0, effectCanvas.value.width, effectCanvas.value.height);
+  ctx.clearRect(0, 0, effectCanvas.value.width, effectCanvas.value.height);
 
-    for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vx *= 0.98; // Less drag for smoother/slower movement
-        p.vy *= 0.98;
-        p.size += 0.2; // Slower expansion
-        p.life -= 0.008; // Slower fade (lasts longer)
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vx *= 0.98; // Less drag for smoother/slower movement
+    p.vy *= 0.98;
+    p.size += 0.2; // Slower expansion
+    p.life -= 0.008; // Slower fade (lasts longer)
 
-        if (p.life <= 0) {
-            particles.splice(i, 1);
-        } else {
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            // ctx.rotate(p.rotation); // Rotating circles doesn't show much, skipping for perf
-            ctx.beginPath();
-            ctx.arc(0, 0, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `${p.color} ${p.life * 0.5})`; // Max opacity 0.5
-            ctx.fill();
-            ctx.restore();
-        }
-    }
-
-    if (particles.length > 0) {
-        animationFrameId = requestAnimationFrame(updateParticles);
+    if (p.life <= 0) {
+      particles.splice(i, 1);
     } else {
-        animationFrameId = null;
-        ctx.clearRect(0, 0, effectCanvas.value.width, effectCanvas.value.height);
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      // ctx.rotate(p.rotation); // Rotating circles doesn't show much, skipping for perf
+      ctx.beginPath();
+      ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `${p.color} ${p.life * 0.5})`; // Max opacity 0.5
+      ctx.fill();
+      ctx.restore();
     }
+  }
+
+  if (particles.length > 0) {
+    animationFrameId = requestAnimationFrame(updateParticles);
+  } else {
+    animationFrameId = null;
+    ctx.clearRect(0, 0, effectCanvas.value.width, effectCanvas.value.height);
+  }
 };
 
 // Physics Logic
 const triggerExplosion = (originX: number, originY: number) => {
-    const Engine = Matter.Engine,
-        Runner = Matter.Runner,
-        Bodies = Matter.Bodies,
-        Composite = Matter.Composite,
-        Mouse = Matter.Mouse,
-        MouseConstraint = Matter.MouseConstraint;
+  const Engine = Matter.Engine,
+    Runner = Matter.Runner,
+    Bodies = Matter.Bodies,
+    Composite = Matter.Composite,
+    Mouse = Matter.Mouse,
+    MouseConstraint = Matter.MouseConstraint;
 
-    engine = Engine.create();
-    engine.timing.timeScale = 0.5; // Half speed simulation
-    const world = engine.world;
+  engine = Engine.create();
+  engine.timing.timeScale = 0.5; // Half speed simulation
+  const world = engine.world;
 
-    // Elements to explode: Title, Message, Cups
-    const elements = [
-        document.querySelector('.game-title'),
-        document.querySelector('.message-board'),
-        ...document.querySelectorAll('.cup-wrapper')
-    ].filter(el => el) as HTMLElement[];
+  // Elements to explode: Title, Message, Cups
+  const elements = [
+    document.querySelector('.game-title'),
+    document.querySelector('.message-board'),
+    ...document.querySelectorAll('.cup-wrapper'),
+  ].filter((el) => el) as HTMLElement[];
 
-    // Ground/Walls
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const ground = Bodies.rectangle(width / 2, height + 200, width, 100, { isStatic: true });
-    Composite.add(world, [ground]);
+  // Ground/Walls
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const ground = Bodies.rectangle(width / 2, height + 200, width, 100, {
+    isStatic: true,
+  });
+  Composite.add(world, [ground]);
 
-    const bodies: Matter.Body[] = [];
+  const bodies: Matter.Body[] = [];
 
-    elements.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        el.style.width = `${rect.width}px`;
-        el.style.height = `${rect.height}px`;
-        
-        // Center
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
+  elements.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    el.style.width = `${rect.width}px`;
+    el.style.height = `${rect.height}px`;
 
-        const body = Bodies.rectangle(x, y, rect.width, rect.height, {
-            restitution: 0.6,
-            friction: 0.1,
-            density: 0.002
-        });
-        
-        body.render.element = el;
-        bodies.push(body);
-        
-        // Detach
-        el.style.position = 'fixed';
-        el.style.top = '0';
-        el.style.left = '0';
-        el.style.margin = '0';
-        el.style.transform = `translate(${x}px, ${y}px)`; 
-        el.style.zIndex = '1000';
+    // Center
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    const body = Bodies.rectangle(x, y, rect.width, rect.height, {
+      restitution: 0.6,
+      friction: 0.1,
+      density: 0.002,
     });
 
-    Composite.add(world, bodies);
+    body.render.element = el;
+    bodies.push(body);
 
-    // Add Explosion Force
-    bodies.forEach(body => {
-        const forceMagnitude = 0.15 * body.mass; // Reduced force
-        const dx = body.position.x - originX;
-        const dy = body.position.y - originY;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    // Detach
+    el.style.position = 'fixed';
+    el.style.top = '0';
+    el.style.left = '0';
+    el.style.margin = '0';
+    el.style.transform = `translate(${x}px, ${y}px)`;
+    el.style.zIndex = '1000';
+  });
 
-        Matter.Body.applyForce(body, body.position, {
-            x: (dx / dist) * forceMagnitude,
-            y: (dy / dist) * forceMagnitude - 0.03 * body.mass // Less lift
-        });
-        
-        Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2); // Slower spinning
+  Composite.add(world, bodies);
+
+  // Add Explosion Force
+  bodies.forEach((body) => {
+    const forceMagnitude = 0.15 * body.mass; // Reduced force
+    const dx = body.position.x - originX;
+    const dy = body.position.y - originY;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+
+    Matter.Body.applyForce(body, body.position, {
+      x: (dx / dist) * forceMagnitude,
+      y: (dy / dist) * forceMagnitude - 0.03 * body.mass, // Less lift
     });
 
-    const mouse = Mouse.create(document.body);
-    const mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: { stiffness: 0.2, render: { visible: false } }
-    });
-    Composite.add(world, mouseConstraint);
+    Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2); // Slower spinning
+  });
 
-    Matter.Events.on(engine, 'afterUpdate', () => {
-        bodies.forEach(body => {
-            const el = body.render.element as HTMLElement;
-            if (el) {
-                const { x, y } = body.position;
-                el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${body.angle}rad)`;
-            }
-        });
-    });
+  const mouse = Mouse.create(document.body);
+  const mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: { stiffness: 0.2, render: { visible: false } },
+  });
+  Composite.add(world, mouseConstraint);
 
-    runner = Runner.create();
-    Runner.run(runner, engine);
+  Matter.Events.on(engine, 'afterUpdate', () => {
+    bodies.forEach((body) => {
+      const el = body.render.element as HTMLElement;
+      if (el) {
+        const { x, y } = body.position;
+        el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${body.angle}rad)`;
+      }
+    });
+  });
+
+  runner = Runner.create();
+  Runner.run(runner, engine);
 };
 
 const cleanupPhysics = () => {
-    if (runner) Matter.Runner.stop(runner);
-    if (engine) Matter.Engine.clear(engine);
-    runner = null;
-    engine = null;
-    
-    // Also clear particles and sound
-    particles = [];
-    if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    stopShuffleSound();
-    /* Clear canvas: handled in update loop when particles empty or next frame */
+  if (runner) Matter.Runner.stop(runner);
+  if (engine) Matter.Engine.clear(engine);
+  runner = null;
+  engine = null;
+
+  // Also clear particles and sound
+  particles = [];
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  stopShuffleSound();
+  /* Clear canvas: handled in update loop when particles empty or next frame */
 };
 
 onMounted(() => {
@@ -489,7 +507,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-    cleanupPhysics();
+  cleanupPhysics();
 });
 </script>
 
