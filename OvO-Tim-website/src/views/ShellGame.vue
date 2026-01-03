@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import Matter from 'matter-js';
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+// biome-ignore lint/correctness/noUnusedImports: Used in template
 import bombImg from '../assets/bomb.png';
 // Assets
+// biome-ignore lint/correctness/noUnusedImports: Used in template
 import cupImg from '../assets/cup.png';
+// biome-ignore lint/correctness/noUnusedImports: Used in template
 import ferrisImg from '../assets/ferris.png';
+// biome-ignore lint/correctness/noUnusedImports: Used in template
 import kicadImg from '../assets/kicad.png';
+// biome-ignore lint/correctness/noUnusedImports: Used in template
 import openSourceImg from '../assets/Open_Source_Initiative.svg.png';
+// biome-ignore lint/correctness/noUnusedImports: Used in template
 import rickrollImg from '../assets/rickroll-roll.gif';
 
 // Game States
@@ -98,7 +104,9 @@ const initGame = () => {
 
 const startGame = async () => {
   // Hide everything
-  cups.value.forEach((c) => (c.revealed = false));
+  cups.value.forEach((c) => {
+    c.revealed = false;
+  });
   await new Promise((r) => setTimeout(r, 500));
 
   gameState.value = 'shuffling';

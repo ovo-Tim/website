@@ -35,6 +35,21 @@
                 <p class="card-text">Arch Linux (laptop)</p>
                 <p class="card-text">Debian/Armbian (server)</p>
             </div>
+            <div class="card stat-card" v-if="serverInfo">
+                <h3>Server Status</h3>
+                <p class="card-text cpu-model">{{ serverInfo.cpu_model }}</p>
+                <p class="specs-text">{{ serverInfo.cpu_cores }} Cores / {{ serverInfo.total_memory }}GB RAM</p>
+                <div class="server-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">CPU</span>
+                        <span class="metric-value" :class="{'high-load': serverInfo.cpu_usage > 80}">{{ serverInfo.cpu_usage }}%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">RAM</span>
+                        <span class="metric-value" :class="{'high-load': serverInfo.ram_usage > 80}">{{ serverInfo.ram_usage }}%</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="boost-container">
@@ -136,6 +151,47 @@
     font-weight: 600;
     color: var(--text-primary);
     margin: 0.25rem 0;
+}
+
+.cpu-model {
+    font-size: 1rem !important;
+    margin-bottom: 0.25rem !important;
+    word-break: break-word;
+}
+
+.specs-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+}
+
+.server-metrics {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.metric-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+.metric-value.high-load {
+    color: #ef4444;
 }
 
 .btn-modern {
@@ -278,21 +334,33 @@
 
 <script setup>
 import Matter from 'matter-js';
-import { onBeforeUnmount, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 // Refs
 const physicsEnabled = ref(false);
+const serverInfo = ref(null);
 let engine = null;
-const render = null;
+
+onMounted(async () => {
+    try {
+        const response = await fetch('http://localhost:8000/info');
+        if (response.ok) {
+            serverInfo.value = await response.json();
+        }
+    } catch (error) {
+        console.log('Backend not connecting, server info card will be hidden');
+    }
+});
 let runner = null;
 
+// biome-ignore lint/correctness/noUnusedVariables: Used in template
 const startPhysics = () => {
   if (physicsEnabled.value) return; // Prevent double clicking
   physicsEnabled.value = true;
 
   // 1. Setup Matter.js Engine
   const Engine = Matter.Engine,
-    Render = Matter.Render, // We won't use the canvas render, but we need the engine
+    // Render = Matter.Render, // We won't use the canvas render, but we need the engine
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
     Composite = Matter.Composite,
