@@ -47,7 +47,7 @@ const descriptions: Record<string, string> = {
     "I love the design of Rust—it's both elegant and high-performance. It’s a versatile tool that I can use almost anywhere.",
   kicad:
     'KiCAD make people bored, cause circuit board is (a) kind of board(bored). :P Besides, it is a really nice EDA tool and I enjoyed a lot when design PCBs with it.',
-  opensource: 'Open source gives us a brighter future',
+  opensource: 'The future is open-source, and it’s brighter than ever.',
   bomb: 'BOOM!',
   rickroll: "Go to check out Rick Astley's other songs. They are not bad!",
 };
